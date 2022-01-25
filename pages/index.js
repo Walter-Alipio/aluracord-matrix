@@ -4,6 +4,7 @@ import appConfig from '../config.json'
 function GlobalStyle(){
     return (
         <style global jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,700;1,400&family=New+Tegomin&display=swap');
             * {
                 margin: 0;
                 padding: 0;
@@ -37,8 +38,9 @@ function Title(props){
             <Tag>{props.children}</Tag>
             <style jsx>{`
                      ${Tag} {
-                        color: ${appConfig.theme.colors.neutrals['100']};
-                        font-size: 24px;
+                        color: ${appConfig.theme.colors.primary['200']};
+                        font-family: 'New Tegomin', serif;
+                        font-size: 1.7rem;
                         font-weight: 600;
                     }    
                `}                   
@@ -86,7 +88,7 @@ function Title(props){
               width: '100%', maxWidth: '700px',
               borderRadius: '5px', padding: '32px', margin: '16px',
               boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-              backgroundColor: appConfig.theme.colors.neutrals[700],
+              backgroundColor: appConfig.theme.colors.neutrals[700],               
             }}
           >
             {/* Formulário */}
@@ -94,22 +96,24 @@ function Title(props){
               as="form"
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: '18px',
                 width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
               }}
             >
               <Title tag="h2">Boas vindas de volta!</Title>
               <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
-                {appConfig.name}({username})
+                {appConfig.name} ({username})
               </Text>
   
               <TextField
                 fullWidth
+                label='Login'
                 textFieldColors={{
                   neutral: {
                     textColor: appConfig.theme.colors.neutrals[200],
                     mainColor: appConfig.theme.colors.neutrals[900],
                     mainColorHighlight: appConfig.theme.colors.primary[500],
-                    backgroundColor: appConfig.theme.colors.neutrals[800],
+                    backgroundColor: appConfig.theme.colors.primary['100'],
                   },
                 }}
               />
@@ -123,6 +127,7 @@ function Title(props){
                   mainColorLight: appConfig.theme.colors.primary[400],
                   mainColorStrong: appConfig.theme.colors.primary[600],
                 }}
+            
               />
             </Box>
             {/* Formulário */}
@@ -137,7 +142,8 @@ function Title(props){
                 maxWidth: '200px',
                 padding: '16px',
                 backgroundColor: appConfig.theme.colors.neutrals[800],
-                border: '1px solid',
+                border: 'none',
+                boxShadow: '5px 5px 5px' ,
                 borderColor: appConfig.theme.colors.neutrals[999],
                 borderRadius: '10px',
                 flex: 1,
