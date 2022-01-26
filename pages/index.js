@@ -1,35 +1,9 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
-import appConfig from '../config.json'
+import React from 'react';
+import {useRouter} from 'next/router';
+import appConfig from '../config.json';
 
-function GlobalStyle(){
-    return (
-        <style global jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,700;1,400&family=New+Tegomin&display=swap');
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                list-style: none;
-            }
-            body {
-                font-family: 'Open Sans', sans-serif;
-            }
-            /* App fit Height */ 
-            html, body, #__next {
-                min-height: 100vh;
-                display: flex;
-                flex: 1;
-            }
-            #__next {
-                flex: 1;
-            }
-            #__next > * {
-                flex: 1;
-            }
-            /* ./App fit Height */ 
-        `}</style>
-    );
-}
+
 
 function Title(props){
     const Tag = props.tag || 'h1';
@@ -56,18 +30,17 @@ function Title(props){
 //                <GlobalStyle></GlobalStyle>
 //                <Title tag="h1">Boas vindas de volta!</Title>
 //                <h2>Discord - Alura Matrix</h2>
-             
 //            </div>
 //         )
 //   }
   
 //   export default HomePage
   export default function PaginaInicial() {
-    const username = 'Walter-Alipio';
-  
+    // const username = 'Walter-Alipio';
+    const [username, setUsername] = React.useState();   //setUsername é um hook
+    const router = useRouter(); //useRouter tambem é um hook
     return (
       <>
-        <GlobalStyle />
         <Box
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -94,6 +67,10 @@ function Title(props){
             {/* Formulário */}
             <Box
               as="form"
+              onSubmit = {function (event){
+                event.preventDefault();
+                router.push('/chat')
+              }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 gap: '10px',
@@ -102,15 +79,21 @@ function Title(props){
             >
               <Title tag="h2">Boas vindas de volta!</Title>
               <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
-                {appConfig.name} ({username})
+                {appConfig.name} {username}
               </Text>
   
               <TextField
                 fullWidth
                 label='Login'
+                value={username}
+                onChange={function(event){
+                    const inputValue = event.target.value;//pega o valor do input
+                    setUsername(inputValue);//faz a alteração em tempo real
+                    
+                } }
                 textFieldColors={{
                   neutral: {
-                    textColor: appConfig.theme.colors.neutrals[200],
+                    textColor: appConfig.theme.colors.neutrals[900],
                     mainColor: appConfig.theme.colors.neutrals[900],
                     mainColorHighlight: appConfig.theme.colors.primary[500],
                     backgroundColor: appConfig.theme.colors.primary['100'],
@@ -154,6 +137,7 @@ function Title(props){
                 styleSheet={{
                   borderRadius: '50%',
                   marginBottom: '16px',
+                  height: '30px',
                 }}
                 src={`https://github.com/${username}.png`}
               />
