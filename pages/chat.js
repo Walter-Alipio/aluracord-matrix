@@ -70,7 +70,7 @@ export default function ChatPage() {
             as="form"
             styleSheet={{
               display: "flex",
-              alignItems: "center",
+              // alignItems: "center",
             }}
           >
             <TextField
@@ -98,6 +98,24 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+            <Button
+            type="button"
+            onClick = {function (event){
+              event.preventDefault();
+              if(mensagem != ''){
+                handleNovaMensagem(mensagem);
+                // event.variant = "tertiary"
+              }
+            }}
+          variant="tertiary"
+          colorVariant="neutral"
+          label="Send"
+          styleSheet={{
+            color: appConfig.theme.colors.neutrals[100],
+            height: "44px",
+            fontFamily: "Courier Prime, monospace",
+          }}
+        />
           </Box>
         </Box>
       </Box>
@@ -123,6 +141,9 @@ function Header() {
           colorVariant="neutral"
           label="Logout"
           href="/"
+          styleSheet={{
+            color: appConfig.theme.colors.neutrals[100],
+          }}
         />
       </Box>
     </>
@@ -135,7 +156,8 @@ function MessageList(props) {
     <Box
       tag="ul"
       styleSheet={{
-        overflow: "scroll",
+        overflowY: "scroll",
+        overflowWrap: "break-word",
         display: "flex",
         flexDirection: "column-reverse",
         flex: 1,
@@ -150,6 +172,8 @@ function MessageList(props) {
             tag="li"
             styleSheet={{
               borderRadius: "5px",
+              color: appConfig.theme.colors.primary[200],
+              fontFamily: "Courier Prime, monospace",
               padding: "6px",
               marginBottom: "12px",
               hover: {
@@ -172,7 +196,10 @@ function MessageList(props) {
                 }}
                 src={`https://github.com/vanessametonini.png`}
               />
-              <Text tag="strong">{mensagem.de}</Text>
+              <Text tag="strong"
+               styleSheet={{
+                color: appConfig.theme.colors.neutrals[100],
+              }}>{mensagem.de}</Text>
               <Text
                 styleSheet={{
                   fontSize: "10px",
