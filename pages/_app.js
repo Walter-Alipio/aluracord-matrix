@@ -9,7 +9,7 @@ function GlobalStyle(){
                 list-style: none;
             }
             body {
-                font-family: 'Open Sans', sans-serif;
+                font-family: 'Courier Prime', monospace;
             }
             /* App fit Height */ 
             html, body, #__next {
@@ -37,7 +37,7 @@ function GlobalStyle(){
               
               /* Handle */
               ::-webkit-scrollbar-thumb {
-                background: #2F8132;
+                background: #05400A;
               }
         `}</style>
     );
