@@ -1,20 +1,50 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+const supabaseClient = createClient(supabaseUrl,supabaseKey);
 
 export default function ChatPage() {
   // Sua lógica vai aqui
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
   // ./Sua lógica vai aqui
+  React.useEffect(()=>{
+
+    supabaseClient
+      .from('mensagens')
+      .select('*')
+      .order('id', {ascending: false})
+      .then(({data})=>{ //{}pegando exatamente o data que esta dentro do array
+        setListaDeMensagens(data);
+      })
+  },[]);
+  /*useEffec lida com codigos que só devem ser alterados caso a tela seja recarregada, ou,
+  quando o valor informado no array for alterado. No nosso caso usamos a atualização
+  da lista de mensagens como gatilho dessa alteração */
+
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       id: listaDeMensagens.length + 1,
-      de: "vanessamentonini",
+      de: "walter-alipio",
       texto: novaMensagem,
     };
-    setListaDeMensagens([mensagem, ...listaDeMensagens]);
-    setMensagem("");
+
+    supabaseClient
+      .from('mensagens')
+      .insert([
+        //O objeto deve ter os mesmos campos criados no supabase
+        mensagem
+      ])
+      .then(({data})=>{
+        setListaDeMensagens([data[0], ...listaDeMensagens]);
+        setMensagem("");
+      })
+
   }
   return (
     <Box
@@ -104,7 +134,6 @@ export default function ChatPage() {
               event.preventDefault();
               if(mensagem != ''){
                 handleNovaMensagem(mensagem);
-                // event.variant = "tertiary"
               }
             }}
           variant="tertiary"
@@ -194,7 +223,7 @@ function MessageList(props) {
                   display: "inline-block",
                   marginRight: "8px",
                 }}
-                src={`https://github.com/vanessametonini.png`}
+                src={`https://github.com/${mensagem.de}.png`}
               />
               <Text tag="strong"
                styleSheet={{
