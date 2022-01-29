@@ -39,15 +39,7 @@ function Title(props){
     // const username = 'Walter-Alipio';
     const [username, setUsername] = React.useState();   //setUsername é um hook
     const router = useRouter(); //useRouter tambem é um hook
-
-    const gitObject = fetch('https://api.github.com/users/walter-alipio')
-    .then(function(response){
-        return response.json();
-    })
-    .then(function(object){
-        return object;
-    })
-    console.log(gitObject)
+    
     return (
       <>
         <Box
