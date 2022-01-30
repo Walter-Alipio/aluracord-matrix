@@ -1,14 +1,23 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
-import {useRouter} from 'next/router';
-import { createClient } from '@supabase/supabase-js'
-import { ButtonSendSticker } from '../src/components/ButtonSendSticker.js'
+import { useRouter } from "next/router";
+import { createClient } from "@supabase/supabase-js";
+import { ButtonSendSticker } from "../src/components/ButtonSendSticker.js";
 
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-const supabaseClient = createClient(supabaseUrl,supabaseKey);
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+function escutaMensagensEmTempoReal(adicionaMensagem) {
+  return supabaseClient
+    .from("mensagem")
+    .on("INSERT", (respostaLive) => {
+      adicionaMensagem(respostaLive.new);
+    })
+    .subscribe();
+}
 
 export default function ChatPage() {
   // Sua lógica vai aqui
@@ -17,38 +26,60 @@ export default function ChatPage() {
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
   // ./Sua lógica vai aqui
-  React.useEffect(()=>{ //função executada quando a página é carregada
+  React.useEffect(() => {
+    //função executada quando a página é carregada
 
     supabaseClient
-      .from('mensagens')
-      .select('*')
-      .order('id', {ascending: false})
-      .then(({data})=>{ //{}pegando exatamente o data que esta dentro do array
+      .from("mensagens")
+      .select("*")
+      .order("id", { ascending: false })
+      .then(({ data }) => {
+        //{}pegando exatamente o data que esta dentro do array
         setListaDeMensagens(data);
-      })
-  },[]);
+      });
+
+    const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
+      console.log("Nova mensagem:", novaMensagem);
+      console.log("listaDeMensagens:", listaDeMensagens);
+      // Quero reusar um valor de referencia (objeto/array)
+      // Passar uma função pro setState
+
+      // setListaDeMensagens([
+      //     novaMensagem,
+      //     ...listaDeMensagens
+      // ])
+      setListaDeMensagens((valorAtualDaLista) => {
+        console.log("valorAtualDaLista:", valorAtualDaLista);
+        return [novaMensagem, ...valorAtualDaLista];
+      });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   /*useEffec lida com codigos que só devem ser alterados caso a tela seja recarregada, ou,
   quando o valor informado no array for alterado. No nosso caso usamos a atualização
   da lista de mensagens como gatilho dessa alteração */
 
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      id: listaDeMensagens.length + 1,
+      // id: listaDeMensagens.length + 1,
       de: logedUser,
       texto: novaMensagem,
     };
 
     supabaseClient
-      .from('mensagens')
+      .from("mensagens")
       .insert([
         //O objeto deve ter os mesmos campos criados no supabase
-        mensagem
+        mensagem,
       ])
-      .then(({data})=>{
-        setListaDeMensagens([data[0], ...listaDeMensagens]);
-        setMensagem("");
-      })
+      .then(({ data }) => {
+        // setListaDeMensagens([data[0], ...listaDeMensagens]);
+      });
 
+    setMensagem("");
   }
   return (
     <Box
@@ -133,28 +164,34 @@ export default function ChatPage() {
               }}
             />
             <ButtonSendSticker
-              onStickerClick={(sticker)=>{
+              onStickerClick={(sticker) => {
                 handleNovaMensagem(`:sticker: ${sticker}`);
               }}
             />
 
             <Button
-            type="button"
-            onClick = {function (event){
-              event.preventDefault();
-              if(mensagem != ''){
-                handleNovaMensagem(mensagem);
-              }
-            }}
-          variant="tertiary"
-          colorVariant="neutral"
-          label="Send"
-          styleSheet={{
-            color: appConfig.theme.colors.neutrals[100],
-            height: "44px",
-            fontFamily: "Courier Prime, monospace",
-          }}
-        />
+              type="button"
+              onClick={function (event) {
+                event.preventDefault();
+                if (mensagem != "") {
+                  handleNovaMensagem(mensagem);
+                }
+              }}
+              variant="tertiary"
+              colorVariant="neutral"
+              label="Send"
+              styleSheet={{
+                color: appConfig.theme.colors.primary[900],
+                backgroundColor: appConfig.theme.colors.neutrals[300],
+                hover: {
+                  color: appConfig.theme.colors.neutrals[100],
+                  backgroundColor: appConfig.theme.colors.primary[900],
+                },
+                height: "44px",
+                fontFamily: "Courier Prime, monospace",
+                marginLeft: "7px",
+              }}
+            />
           </Box>
         </Box>
       </Box>
@@ -235,10 +272,14 @@ function MessageList(props) {
                 }}
                 src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong"
-               styleSheet={{
-                color: appConfig.theme.colors.neutrals[100],
-              }}>{mensagem.de}</Text>
+              <Text
+                tag="strong"
+                styleSheet={{
+                  color: appConfig.theme.colors.neutrals[100],
+                }}
+              >
+                {mensagem.de}
+              </Text>
               <Text
                 styleSheet={{
                   fontSize: "10px",
@@ -250,16 +291,16 @@ function MessageList(props) {
                 {new Date().toLocaleDateString()}
               </Text>
             </Box>
-            {mensagem.texto.startsWith(':sticker:')?(   
-                <Image 
+            {mensagem.texto.startsWith(":sticker:") ? (
+              <Image
                 styleSheet={{
-                  maxWidth: "250px"
+                  maxWidth: "250px",
                 }}
-                src={mensagem.texto.replace(':sticker:','')}/>
-             )
-             :( 
-                mensagem.texto 
-             )}
+                src={mensagem.texto.replace(":sticker:", "")}
+              />
+            ) : (
+              mensagem.texto
+            )}
           </Text>
         );
       })}
