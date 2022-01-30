@@ -1,7 +1,9 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
+import {useRouter} from 'next/router';
 import { createClient } from '@supabase/supabase-js'
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker.js'
 
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -10,10 +12,12 @@ const supabaseClient = createClient(supabaseUrl,supabaseKey);
 
 export default function ChatPage() {
   // Sua lógica vai aqui
+  const router = useRouter(); //useRouter tambem é um hook
+  const logedUser = router.query.username;
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
   // ./Sua lógica vai aqui
-  React.useEffect(()=>{
+  React.useEffect(()=>{ //função executada quando a página é carregada
 
     supabaseClient
       .from('mensagens')
@@ -30,7 +34,7 @@ export default function ChatPage() {
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       id: listaDeMensagens.length + 1,
-      de: "walter-alipio",
+      de: logedUser,
       texto: novaMensagem,
     };
 
@@ -128,6 +132,12 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+            <ButtonSendSticker
+              onStickerClick={(sticker)=>{
+                handleNovaMensagem(`:sticker: ${sticker}`);
+              }}
+            />
+
             <Button
             type="button"
             onClick = {function (event){
@@ -240,7 +250,16 @@ function MessageList(props) {
                 {new Date().toLocaleDateString()}
               </Text>
             </Box>
-            {mensagem.texto}
+            {mensagem.texto.startsWith(':sticker:')?(   
+                <Image 
+                styleSheet={{
+                  maxWidth: "250px"
+                }}
+                src={mensagem.texto.replace(':sticker:','')}/>
+             )
+             :( 
+                mensagem.texto 
+             )}
           </Text>
         );
       })}
