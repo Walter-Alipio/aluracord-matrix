@@ -5,15 +5,15 @@ import { useRouter } from "next/router";
 import { createClient } from "@supabase/supabase-js";
 import { ButtonSendSticker } from "../src/components/ButtonSendSticker.js";
 
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI5MDYzOSwiZXhwIjoxOTU4ODY2NjM5fQ.7bXFEq5I25y5DeWw81OIf0YsPkxTC7YlUvJa85fr8TQ';
+const supabaseUrl = 'https://potsskqngoxthygypyti.supabase.co';
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 function escutaMensagensEmTempoReal(adicionaMensagem) {
   return supabaseClient
-    .from("mensagem")
-    .on("INSERT", (respostaLive) => {
+    .from('mensagens')
+    .on('INSERT', (respostaLive) => {
       adicionaMensagem(respostaLive.new);
     })
     .subscribe();
@@ -50,7 +50,8 @@ export default function ChatPage() {
       // ])
       setListaDeMensagens((valorAtualDaLista) => {
         console.log("valorAtualDaLista:", valorAtualDaLista);
-        return [novaMensagem, ...valorAtualDaLista];
+        return [novaMensagem,
+          ...valorAtualDaLista];
       });
     });
 
